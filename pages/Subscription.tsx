@@ -8,6 +8,18 @@ const Subscription: React.FC = () => {
   const { currency, subscriptionTier, setSubscriptionTier } = useSettings();
   const [showPayment, setShowPayment] = useState(false);
 
+  // Dynamic pricing based on currency
+  const getProPrice = () => {
+    switch (currency) {
+        case 'INR': return 399;
+        case 'EUR': return 4.99;
+        case 'USD': 
+        default: return 4.99;
+    }
+  };
+
+  const proPrice = getProPrice();
+
   const PLANS = [
     {
       id: 'FREE',
@@ -18,7 +30,7 @@ const Subscription: React.FC = () => {
     {
       id: 'PRO',
       name: 'FestPlan Pro',
-      price: currency === 'INR' ? 399 : 5, // 399 INR or 5 USD
+      price: proPrice,
       features: ['AI Assistant & Concierge', 'Premium Cultural Templates', 'AR/VR Venue Previews', 'Zero Transaction Fees', 'Advanced Analytics'],
       recommended: true
     }
@@ -37,7 +49,7 @@ const Subscription: React.FC = () => {
       <PaymentModal 
          isOpen={showPayment}
          onClose={() => setShowPayment(false)}
-         amount={currency === 'INR' ? 399 : 5}
+         amount={proPrice}
          item="FestPlan Pro Subscription (Monthly)"
          onSuccess={onPaymentSuccess}
       />

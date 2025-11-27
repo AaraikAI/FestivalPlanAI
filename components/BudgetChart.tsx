@@ -22,7 +22,7 @@ const BudgetChart: React.FC<Props> = ({ total, spent }) => {
 
   return (
     <div className="h-64 w-full relative flex flex-col items-center justify-center">
-      <div className="absolute inset-0 top-0 flex items-center justify-center z-0 pointer-events-none pb-8">
+      <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none mb-6">
         <div className="text-center">
             <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wide">Utilized</p>
             <p className="text-2xl font-bold text-gray-800">{percentage}%</p>

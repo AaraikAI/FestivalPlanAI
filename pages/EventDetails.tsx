@@ -291,6 +291,10 @@ const EventDetails: React.FC = () => {
                          <p className="text-xs text-gray-500">{v.category}</p>
                      </div>
                  ))}
+                 <Link to="/vendors" className="border-2 border-dashed border-gray-300 p-4 rounded-xl flex flex-col items-center justify-center text-gray-400 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50 transition-all cursor-pointer">
+                     <span className="text-2xl mb-1">🛍️</span>
+                     <span className="font-bold text-sm">Find Vendors</span>
+                 </Link>
              </div>
           )}
         </div>
