@@ -1,11 +1,14 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { sendMessageToGemini } from '../services/geminiService';
 import { ChatMessage } from '../types';
+import { useSettings } from '../context/SettingsContext';
 
 const ChatAssistant: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { language } = useSettings();
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: 'welcome',
@@ -41,7 +44,7 @@ const ChatAssistant: React.FC = () => {
     // Prepare history for API
     const history = messages.map(m => ({ role: m.role, text: m.text }));
 
-    const responseText = await sendMessageToGemini(history, userMsg.text);
+    const responseText = await sendMessageToGemini(history, userMsg.text, language);
 
     const botMsg: ChatMessage = {
       id: (Date.now() + 1).toString(),

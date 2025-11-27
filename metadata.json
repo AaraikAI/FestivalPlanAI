@@ -1,5 +1,7 @@
 {
   "name": "FestPlan AI",
   "description": "A full-stack event planning AI agent tailored for the Indian market, featuring cultural templates, hyper-local vendor matching, and sustainability tracking.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [
+    "camera"
+  ]
 }

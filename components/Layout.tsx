@@ -12,7 +12,7 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
-  const { user, login } = useAuth();
+  const { user, logout } = useAuth();
   const { language, setLanguage, currency, setCurrency, subscriptionTier } = useSettings();
 
   const hostNavItems = [
@@ -103,10 +103,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
            </div>
            
            <button 
-             onClick={() => login(user?.role === 'HOST' ? 'VENDOR' : 'HOST')}
-             className="w-full text-xs font-medium text-gray-500 hover:text-gray-800 border border-dashed border-gray-300 rounded-lg py-2 hover:bg-white transition-all"
+             onClick={logout}
+             className="w-full text-xs font-medium text-red-500 hover:text-red-700 border border-red-200 rounded-lg py-2 hover:bg-red-50 transition-all flex items-center justify-center gap-2"
           >
-             🔄 Switch to {user?.role === 'HOST' ? 'Vendor' : 'Host'}
+             <span>🚪</span> Sign Out
           </button>
         </div>
       </aside>

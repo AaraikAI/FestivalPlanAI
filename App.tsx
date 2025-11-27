@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import MyEvents from './pages/MyEvents';
@@ -12,16 +12,32 @@ import Community from './pages/Community';
 import VendorOnboarding from './pages/VendorOnboarding';
 import Subscription from './pages/Subscription';
 import Settings from './pages/Settings';
+import Login from './pages/Login';
 import { EventProvider } from './context/EventContext';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { SettingsProvider } from './context/SettingsContext';
 
-const App: React.FC = () => {
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAuthenticated, isLoading } = useAuth();
+  const location = useLocation();
+
+  if (isLoading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return <>{children}</>;
+};
+
+const AppRoutes = () => {
   return (
-    <AuthProvider>
-      <SettingsProvider>
-        <EventProvider>
-          <HashRouter>
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route
+        path="/*"
+        element={
+          <ProtectedRoute>
             <Layout>
               <Routes>
                 <Route path="/" element={<Dashboard />} />
@@ -36,6 +52,20 @@ const App: React.FC = () => {
                 <Route path="/settings" element={<Settings />} />
               </Routes>
             </Layout>
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <AuthProvider>
+      <SettingsProvider>
+        <EventProvider>
+          <HashRouter>
+            <AppRoutes />
           </HashRouter>
         </EventProvider>
       </SettingsProvider>

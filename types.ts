@@ -39,6 +39,8 @@ export interface User {
   role: UserRole;
   avatar: string;
   vendorProfileId?: string; // If they are a vendor
+  credits: number; // Passive income/Referral credits
+  referralCode: string;
 }
 
 export interface Vendor {
@@ -53,6 +55,7 @@ export interface Vendor {
   description: string;
   verified?: boolean; // ID Verification Status
   ownerId?: string; // Link to User
+  basePrice: number; // For dynamic pricing
 }
 
 export interface EventTask {
@@ -124,6 +127,6 @@ export interface CalendarEvent {
   id: string;
   name: string;
   date: string;
-  type: 'festival' | 'muhurat';
+  type: 'festival' | 'muhurat' | 'holiday';
   description: string;
 }

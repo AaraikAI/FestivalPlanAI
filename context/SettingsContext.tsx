@@ -1,6 +1,8 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { AppSettings, Language, Currency, SubscriptionTier } from '../types';
+import { useAuth } from './AuthContext';
+import { encryptData, decryptData } from '../services/storageService';
 
 interface SettingsContextType extends AppSettings {
   setLanguage: (lang: Language) => void;
@@ -13,8 +15,7 @@ interface SettingsContextType extends AppSettings {
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
-export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [settings, setSettings] = useState<AppSettings>({
+const DEFAULT_SETTINGS: AppSettings = {
     language: 'en',
     currency: 'INR',
     subscriptionTier: 'FREE',
@@ -22,7 +23,44 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
       shareDataForCredits: false,
       analyticsConsent: true
     }
-  });
+};
+
+export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { addCredits } = useAuth();
+  const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS);
+
+  // Load Settings
+  useEffect(() => {
+    const loadSettings = async () => {
+        const stored = localStorage.getItem('festplan_settings');
+        if (stored) {
+            const decrypted = await decryptData<AppSettings>(stored, DEFAULT_SETTINGS);
+            setSettings(decrypted);
+        }
+    };
+    loadSettings();
+  }, []);
+
+  // Save Settings
+  useEffect(() => {
+    const saveSettings = async () => {
+        const encrypted = await encryptData(settings);
+        localStorage.setItem('festplan_settings', encrypted);
+    };
+    saveSettings();
+  }, [settings]);
+
+  // Passive Income Logic (Simulation)
+  useEffect(() => {
+      let interval: any;
+      if (settings.privacy.shareDataForCredits) {
+          // Add 1 credit every 10 seconds for demo purposes (Representing bandwidth sharing)
+          interval = setInterval(() => {
+              addCredits(1);
+          }, 10000);
+      }
+      return () => clearInterval(interval);
+  }, [settings.privacy.shareDataForCredits, addCredits]);
 
   const setLanguage = (lang: Language) => setSettings(prev => ({ ...prev, language: lang }));
   const setCurrency = (curr: Currency) => setSettings(prev => ({ ...prev, currency: curr }));
@@ -47,12 +85,7 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const deleteUserData = () => {
     alert("GDPR Request: All your data has been scheduled for deletion.");
-    setSettings({
-        language: 'en',
-        currency: 'INR',
-        subscriptionTier: 'FREE',
-        privacy: { shareDataForCredits: false, analyticsConsent: false }
-    });
+    setSettings(DEFAULT_SETTINGS);
   };
 
   return (

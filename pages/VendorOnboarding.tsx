@@ -25,7 +25,8 @@ const VendorOnboarding: React.FC = () => {
               location: formData.location || 'Mumbai',
               imageUrl: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3',
               description: formData.description || 'New vendor',
-              verified: true
+              verified: true,
+              basePrice: 10000 // Default base price for new onboarded vendors
           });
           setStep(4);
           setIsVerifying(false);

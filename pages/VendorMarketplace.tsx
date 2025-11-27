@@ -6,6 +6,7 @@ import { useSettings } from '../context/SettingsContext';
 import { VendorCategory } from '../types';
 import SustainabilityBadge from '../components/SustainabilityBadge';
 import { formatCurrency } from '../utils/localization';
+import { getSeasonalityMultiplier } from '../constants';
 
 const VendorMarketplace: React.FC = () => {
   const { vendors } = useEvents();
@@ -13,6 +14,9 @@ const VendorMarketplace: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [showOnlyEco, setShowOnlyEco] = useState(false);
+
+  const seasonality = getSeasonalityMultiplier();
+  const isPeakSeason = seasonality > 1.1;
 
   const filteredVendors = vendors.filter(vendor => {
     return (vendor.name.toLowerCase().includes(searchTerm.toLowerCase()) || vendor.location.toLowerCase().includes(searchTerm.toLowerCase())) &&
@@ -23,7 +27,14 @@ const VendorMarketplace: React.FC = () => {
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <h1 className="text-2xl font-bold text-gray-900">Vendor Marketplace</h1>
+        <div>
+            <h1 className="text-2xl font-bold text-gray-900">Vendor Marketplace</h1>
+            {isPeakSeason && (
+                <div className="text-xs font-bold text-red-600 flex items-center gap-1 mt-1">
+                    <span>🔥</span> High Demand Season (Prices +{Math.round((seasonality-1)*100)}%)
+                </div>
+            )}
+        </div>
         <input type="text" placeholder="Search..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="w-full md:w-96 border p-3 rounded-xl" />
       </div>
 
@@ -37,25 +48,35 @@ const VendorMarketplace: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {filteredVendors.map(vendor => (
-          <Link to={`/vendor/${vendor.id}`} key={vendor.id} className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl transition-all block group">
-            <div className="relative h-52">
-                <img src={vendor.imageUrl} className="w-full h-full object-cover" />
-                {vendor.isEcoFriendly && <div className="absolute top-2 left-2"><SustainabilityBadge score={90} size="sm" /></div>}
-            </div>
-            <div className="p-5">
-                <div className="flex justify-between">
-                    <h3 className="font-bold text-lg">{vendor.name}</h3>
-                    <span className="text-xs bg-gray-100 px-2 py-1 rounded">{vendor.category}</span>
+        {filteredVendors.map(vendor => {
+          const dynamicPrice = vendor.basePrice * seasonality;
+
+          return (
+            <Link to={`/vendor/${vendor.id}`} key={vendor.id} className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl transition-all block group">
+                <div className="relative h-52">
+                    <img src={vendor.imageUrl} className="w-full h-full object-cover" />
+                    {vendor.isEcoFriendly && <div className="absolute top-2 left-2"><SustainabilityBadge score={90} size="sm" /></div>}
                 </div>
-                <p className="text-xs text-gray-500 mt-1">📍 {vendor.location}</p>
-                <div className="mt-4 flex justify-between items-center text-sm font-bold">
-                    <span>{['Budget', 'Standard', 'Premium'][vendor.priceLevel-1]}</span>
-                    <span className="text-orange-600">View →</span>
+                <div className="p-5">
+                    <div className="flex justify-between">
+                        <h3 className="font-bold text-lg">{vendor.name}</h3>
+                        <span className="text-xs bg-gray-100 px-2 py-1 rounded">{vendor.category}</span>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">📍 {vendor.location}</p>
+                    
+                    <div className="mt-4 pt-4 border-t border-gray-100">
+                         <div className="flex justify-between items-end">
+                             <div>
+                                 <p className="text-[10px] text-gray-400 uppercase font-bold">Est. Price</p>
+                                 <p className="font-bold text-gray-900">{formatCurrency(dynamicPrice, currency)}</p>
+                             </div>
+                             <span className="text-orange-600 text-sm font-bold">View →</span>
+                         </div>
+                    </div>
                 </div>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

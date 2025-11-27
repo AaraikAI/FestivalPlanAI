@@ -1,35 +1,39 @@
+
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
+import { Language } from "../types";
 
 // Initialize Gemini Client
-// In a real production app, this key should be proxied or handled via a backend.
-// For this demo, we assume process.env.API_KEY is available.
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
 
-const SYSTEM_INSTRUCTION = `
-You are FestPlan AI, an intelligent event planning assistant tailored for the Indian market.
+const getSystemInstruction = (lang: Language) => {
+    let langInstruction = "Respond in English.";
+    if (lang === 'hi') langInstruction = "Respond in Hindi (Devanagari script).";
+    if (lang === 'es') langInstruction = "Respond in Spanish.";
+
+    return `
+You are FestPlan AI, an intelligent event planning assistant tailored for the Indian market and global audience.
 Your goal is to help users plan weddings, festivals (Diwali, Holi, Navratri), and corporate events.
 Key Characteristics:
 1. Frugal-Friendly: Always suggest cost-effective solutions unless asked for luxury.
-2. Culturally Aware: Understand nuances of Indian traditions, muhurats, and food preferences.
+2. Culturally Aware: Understand nuances of Indian traditions, muhurats, and food preferences, but also respect Western holidays.
 3. Sustainability Focused: Encourage eco-friendly choices (green weddings, zero waste).
-4. Tone: Warm, celebratory, and professional (Namaste!).
+4. Tone: Warm, celebratory, and professional.
 
+IMPORTANT: ${langInstruction}
 When giving advice, be concise and practical. Use bullet points for checklists.
 `;
+}
 
 export const sendMessageToGemini = async (
   history: { role: 'user' | 'model'; text: string }[],
-  newMessage: string
+  newMessage: string,
+  language: Language = 'en'
 ): Promise<string> => {
   try {
-    // We construct a chat history for context, though the simple generateContent
-    // is stateless, we can prepend history for simple context simulation
-    // or use the proper chat API. Here we use the Chat API.
-
     const chat = ai.chats.create({
       model: 'gemini-2.5-flash',
       config: {
-        systemInstruction: SYSTEM_INSTRUCTION,
+        systemInstruction: getSystemInstruction(language),
         temperature: 0.7,
       },
       history: history.map(h => ({

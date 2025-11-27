@@ -1,49 +1,91 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { User, UserRole } from '../types';
+import { encryptData, decryptData } from '../services/storageService';
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  login: (role: UserRole) => void;
+  login: (name: string, email: string, role: UserRole) => void;
   logout: () => void;
   updateUser: (updates: Partial<User>) => void;
+  addCredits: (amount: number) => void;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mock User Data
-const MOCK_HOST_USER: User = {
-  id: 'u1',
-  name: 'Jay Deep',
-  email: 'jay@example.com',
-  role: 'HOST',
-  avatar: 'JD'
+// Mock Templates
+const HOST_TEMPLATE: Partial<User> = {
+  credits: 50,
+  referralCode: 'FEST2025'
 };
 
-const MOCK_VENDOR_USER: User = {
-  id: 'v_user_1',
-  name: 'Ramesh Decorators',
-  email: 'ramesh@decor.com',
-  role: 'VENDOR',
-  avatar: 'RD',
-  vendorProfileId: 'v_pending'
+const VENDOR_TEMPLATE: Partial<User> = {
+  vendorProfileId: 'v_pending',
+  credits: 0,
+  referralCode: 'VENDOR10'
 };
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  // Default to Host for demo purposes
-  const [user, setUser] = useState<User | null>(MOCK_HOST_USER);
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const login = (role: UserRole) => {
-    if (role === 'VENDOR') {
-      setUser(MOCK_VENDOR_USER);
-    } else {
-      setUser(MOCK_HOST_USER);
+  // Load Persisted User
+  useEffect(() => {
+    const loadUser = async () => {
+        const stored = localStorage.getItem('festplan_user');
+        if (stored) {
+            try {
+                const decrypted = await decryptData<User>(stored, {} as User);
+                if (decrypted && decrypted.id) {
+                    setUser(decrypted);
+                }
+            } catch (e) {
+                console.error("Failed to load user session");
+                localStorage.removeItem('festplan_user');
+            }
+        }
+        setIsLoading(false);
+    };
+    loadUser();
+  }, []);
+
+  // Save on change
+  useEffect(() => {
+    const saveUser = async () => {
+        if (user) {
+            const encrypted = await encryptData(user);
+            localStorage.setItem('festplan_user', encrypted);
+        } else {
+            localStorage.removeItem('festplan_user');
+        }
+    };
+    if (!isLoading) {
+        saveUser();
     }
+  }, [user, isLoading]);
+
+  const login = (name: string, email: string, role: UserRole) => {
+    const template = role === 'VENDOR' ? VENDOR_TEMPLATE : HOST_TEMPLATE;
+    
+    const newUser: User = {
+        id: `u_${Date.now()}`,
+        name,
+        email,
+        role,
+        avatar: name.substring(0, 2).toUpperCase(),
+        credits: template.credits || 0,
+        referralCode: template.referralCode || 'NEWCODE',
+        vendorProfileId: template.vendorProfileId
+    };
+    
+    setUser(newUser);
   };
 
   const logout = () => {
     setUser(null);
+    localStorage.removeItem('festplan_user');
   };
 
   const updateUser = (updates: Partial<User>) => {
@@ -52,8 +94,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const addCredits = (amount: number) => {
+      if (user) {
+          setUser({ ...user, credits: user.credits + amount });
+      }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout, updateUser, addCredits, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

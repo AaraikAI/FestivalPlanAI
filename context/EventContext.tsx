@@ -1,7 +1,8 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { Event, Vendor } from '../types';
 import { MOCK_EVENTS, MOCK_VENDORS } from '../constants';
+import { encryptData, decryptData } from '../services/storageService';
 
 interface EventContextType {
   events: Event[];
@@ -17,8 +18,52 @@ interface EventContextType {
 const EventContext = createContext<EventContextType | undefined>(undefined);
 
 export const EventProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [events, setEvents] = useState<Event[]>(MOCK_EVENTS);
-  const [vendors, setVendors] = useState<Vendor[]>(MOCK_VENDORS);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [vendors, setVendors] = useState<Vendor[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Load Data
+  useEffect(() => {
+    const loadData = async () => {
+        const storedEvents = localStorage.getItem('festplan_events');
+        const storedVendors = localStorage.getItem('festplan_vendors');
+        
+        if (storedEvents) {
+            const dec = await decryptData<Event[]>(storedEvents, MOCK_EVENTS);
+            setEvents(dec);
+        } else {
+            setEvents(MOCK_EVENTS);
+        }
+
+        if (storedVendors) {
+            const dec = await decryptData<Vendor[]>(storedVendors, MOCK_VENDORS);
+            setVendors(dec);
+        } else {
+            setVendors(MOCK_VENDORS);
+        }
+        setIsLoaded(true);
+    };
+    loadData();
+  }, []);
+
+  // Save Data
+  useEffect(() => {
+    if (!isLoaded) return;
+    const saveEvents = async () => {
+        const enc = await encryptData(events);
+        localStorage.setItem('festplan_events', enc);
+    };
+    saveEvents();
+  }, [events, isLoaded]);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+    const saveVendors = async () => {
+        const enc = await encryptData(vendors);
+        localStorage.setItem('festplan_vendors', enc);
+    };
+    saveVendors();
+  }, [vendors, isLoaded]);
 
   const addEvent = (newEvent: Event) => {
     setEvents(prevEvents => [newEvent, ...prevEvents]);

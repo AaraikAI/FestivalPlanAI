@@ -19,7 +19,8 @@ export const MOCK_VENDORS: Vendor[] = [
     isEcoFriendly: false,
     location: 'Mumbai, Andheri',
     imageUrl: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=800&auto=format&fit=crop',
-    description: 'Luxury banquet hall perfect for grand weddings.'
+    description: 'Luxury banquet hall perfect for grand weddings.',
+    basePrice: 150000
   },
   {
     id: 'v2',
@@ -30,7 +31,8 @@ export const MOCK_VENDORS: Vendor[] = [
     isEcoFriendly: true,
     location: 'Bangalore, Indiranagar',
     imageUrl: 'https://images.unsplash.com/photo-1555244162-803834f70033?q=80&w=800&auto=format&fit=crop',
-    description: 'Organic, farm-to-table vegetarian catering with zero-waste policy.'
+    description: 'Organic, farm-to-table vegetarian catering with zero-waste policy.',
+    basePrice: 800 // Per plate
   },
   {
     id: 'v3',
@@ -41,7 +43,8 @@ export const MOCK_VENDORS: Vendor[] = [
     isEcoFriendly: false,
     location: 'Delhi, CP',
     imageUrl: 'https://images.unsplash.com/photo-1537633552985-df8429e8048b?q=80&w=800&auto=format&fit=crop',
-    description: 'Capturing moments that last a lifetime. Drone shots available.'
+    description: 'Capturing moments that last a lifetime. Drone shots available.',
+    basePrice: 40000
   },
   {
     id: 'v4',
@@ -52,7 +55,8 @@ export const MOCK_VENDORS: Vendor[] = [
     isEcoFriendly: true,
     location: 'Pune, Koregaon Park',
     imageUrl: 'https://images.unsplash.com/photo-1478146896981-b80fe463b330?q=80&w=800&auto=format&fit=crop',
-    description: 'Sustainable decor using recycled materials and local flowers.'
+    description: 'Sustainable decor using recycled materials and local flowers.',
+    basePrice: 25000
   },
   {
     id: 'v5',
@@ -63,7 +67,8 @@ export const MOCK_VENDORS: Vendor[] = [
     isEcoFriendly: false,
     location: 'Mumbai, Bandra',
     imageUrl: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=800&auto=format&fit=crop',
-    description: 'Bollywood, EDM, and Punjabi hits to rock your party.'
+    description: 'Bollywood, EDM, and Punjabi hits to rock your party.',
+    basePrice: 15000
   }
 ];
 
@@ -163,92 +168,78 @@ export const FESTIVAL_TEMPLATES = [
 const generateYearlyEvents = (): CalendarEvent[] => {
   const events: CalendarEvent[] = [];
   
-  // Comprehensive list of Indian Festivals and Muhurats
-  const yearlyData: Record<number, Array<{name: string, type: 'festival' | 'muhurat', day: number, desc: string}>> = {
+  // Comprehensive list of Global & Indian Festivals
+  const yearlyData: Record<number, Array<{name: string, type: 'festival' | 'muhurat' | 'holiday', day: number, desc: string}>> = {
     0: [ // January
-      { name: 'New Year', type: 'festival', day: 1, desc: 'Global Celebration' },
+      { name: 'New Year', type: 'holiday', day: 1, desc: 'Global Celebration' },
       { name: 'Lohri', type: 'festival', day: 13, desc: 'Punjabi Folk Festival' },
       { name: 'Makar Sankranti', type: 'festival', day: 14, desc: 'Harvest Festival' },
       { name: 'Pongal', type: 'festival', day: 15, desc: 'Tamil Harvest Festival' },
-      { name: 'Guru Gobind Singh Jayanti', type: 'festival', day: 17, desc: 'Sikh Festival' },
-      { name: 'Wedding Muhurat', type: 'muhurat', day: 22, desc: 'Auspicious Date' },
+      { name: 'Martin Luther King Jr. Day', type: 'holiday', day: 15, desc: 'US Holiday' },
       { name: 'Republic Day', type: 'festival', day: 26, desc: 'National Holiday' }
     ],
     1: [ // February
+      { name: 'Valentines Day', type: 'holiday', day: 14, desc: 'Global Love Celebration' },
       { name: 'Vasant Panchami', type: 'festival', day: 10, desc: 'Worship of Goddess Saraswati' },
-      { name: 'Wedding Muhurat', type: 'muhurat', day: 14, desc: 'Valentine Wedding Special' },
-      { name: 'Chhatrapati Shivaji Maharaj Jayanti', type: 'festival', day: 19, desc: 'Maratha Warrior King' },
-      { name: 'Wedding Muhurat', type: 'muhurat', day: 28, desc: 'End of month auspicious date' }
+      { name: 'Presidents Day', type: 'holiday', day: 19, desc: 'US Holiday' }
     ],
     2: [ // March
       { name: 'Maha Shivratri', type: 'festival', day: 8, desc: 'Night of Lord Shiva' },
-      { name: 'Holika Dahan', type: 'festival', day: 24, desc: 'Bonfire Night' },
+      { name: 'St. Patricks Day', type: 'holiday', day: 17, desc: 'Irish Cultural Celebration' },
       { name: 'Holi', type: 'festival', day: 25, desc: 'Festival of Colors' },
-      { name: 'Good Friday', type: 'festival', day: 29, desc: 'Religious Holiday' },
-      { name: 'Easter', type: 'festival', day: 31, desc: 'Resurrection Sunday' }
+      { name: 'Good Friday', type: 'holiday', day: 29, desc: 'Christian Holiday' },
+      { name: 'Easter', type: 'holiday', day: 31, desc: 'Resurrection Sunday' }
     ],
     3: [ // April
-      { name: 'Ugadi / Gudi Padwa', type: 'festival', day: 9, desc: 'New Year' },
       { name: 'Eid al-Fitr', type: 'festival', day: 11, desc: 'End of Ramadan' },
       { name: 'Baisakhi', type: 'festival', day: 13, desc: 'Punjabi New Year' },
-      { name: 'Ambedkar Jayanti', type: 'festival', day: 14, desc: 'Equality Day' },
-      { name: 'Ram Navami', type: 'festival', day: 17, desc: 'Birth of Lord Rama' },
-      { name: 'Mahavir Jayanti', type: 'festival', day: 21, desc: 'Jain Festival' },
-      { name: 'Wedding Muhurat', type: 'muhurat', day: 22, desc: 'Auspicious Date' }
+      { name: 'Earth Day', type: 'holiday', day: 22, desc: 'Global Environmental Support' }
     ],
     4: [ // May
-      { name: 'Labour Day', type: 'festival', day: 1, desc: 'International Workers Day' },
-      { name: 'Akshaya Tritiya', type: 'muhurat', day: 10, desc: 'Most Auspicious Day' },
-      { name: 'Mothers Day', type: 'festival', day: 12, desc: 'Celebration of Mothers' },
-      { name: 'Buddha Purnima', type: 'festival', day: 23, desc: 'Birth of Gautam Buddha' }
+      { name: 'Labour Day', type: 'holiday', day: 1, desc: 'International Workers Day' },
+      { name: 'Cinco de Mayo', type: 'holiday', day: 5, desc: 'Mexican Celebration' },
+      { name: 'Mothers Day', type: 'holiday', day: 12, desc: 'Celebration of Mothers' },
+      { name: 'Memorial Day', type: 'holiday', day: 27, desc: 'US Holiday' }
     ],
     5: [ // June
-      { name: 'World Environment Day', type: 'festival', day: 5, desc: 'Sustainability Awareness' },
+      { name: 'World Environment Day', type: 'holiday', day: 5, desc: 'Sustainability Awareness' },
+      { name: 'Fathers Day', type: 'holiday', day: 16, desc: 'Celebration of Fathers' },
       { name: 'Eid al-Adha', type: 'festival', day: 17, desc: 'Festival of Sacrifice' },
-      { name: 'International Yoga Day', type: 'festival', day: 21, desc: 'Wellness & Yoga' },
-      { name: 'Wedding Muhurat', type: 'muhurat', day: 29, desc: 'Summer Wedding Date' }
+      { name: 'Juneteenth', type: 'holiday', day: 19, desc: 'US Holiday' }
     ],
     6: [ // July
-      { name: 'Rath Yatra', type: 'festival', day: 7, desc: 'Chariot Festival' },
-      { name: 'Wedding Muhurat', type: 'muhurat', day: 11, desc: 'Auspicious Date' },
-      { name: 'Muharram', type: 'festival', day: 17, desc: 'Islamic New Year' },
+      { name: 'Independence Day (USA)', type: 'holiday', day: 4, desc: 'US National Holiday' },
+      { name: 'Bastille Day', type: 'holiday', day: 14, desc: 'French National Day' },
       { name: 'Guru Purnima', type: 'festival', day: 21, desc: 'Honoring Teachers' }
     ],
     7: [ // August
-      { name: 'Friendship Day', type: 'festival', day: 4, desc: 'Celebration of friends' },
-      { name: 'Independence Day', type: 'festival', day: 15, desc: 'National Holiday' },
-      { name: 'Parsi New Year', type: 'festival', day: 16, desc: 'Navroz' },
+      { name: 'Friendship Day', type: 'holiday', day: 4, desc: 'Celebration of friends' },
+      { name: 'Independence Day (India)', type: 'festival', day: 15, desc: 'National Holiday' },
       { name: 'Raksha Bandhan', type: 'festival', day: 19, desc: 'Bond of protection' },
       { name: 'Janmashtami', type: 'festival', day: 26, desc: 'Birth of Lord Krishna' }
     ],
     8: [ // September
-      { name: 'Teachers Day', type: 'festival', day: 5, desc: 'Honoring Educators' },
+      { name: 'Labor Day (USA)', type: 'holiday', day: 2, desc: 'US Holiday' },
       { name: 'Ganesh Chaturthi', type: 'festival', day: 7, desc: 'Festival of Ganesh' },
       { name: 'Onam', type: 'festival', day: 15, desc: 'Harvest Festival of Kerala' },
-      { name: 'Eid-e-Milad', type: 'festival', day: 16, desc: 'Birth of Prophet' }
+      { name: 'Oktoberfest Begins', type: 'holiday', day: 21, desc: 'German Folk Festival' }
     ],
     9: [ // October
       { name: 'Gandhi Jayanti', type: 'festival', day: 2, desc: 'Birth of Mahatma Gandhi' },
-      { name: 'Navratri Begins', type: 'festival', day: 3, desc: '9 Nights of Goddess' },
-      { name: 'Durga Puja', type: 'festival', day: 9, desc: 'Worship of Goddess Durga' },
       { name: 'Dussehra', type: 'festival', day: 12, desc: 'Victory of Good over Evil' },
-      { name: 'Karwa Chauth', type: 'festival', day: 20, desc: 'Fasting for husbands' },
-      { name: 'Dhanteras', type: 'festival', day: 29, desc: 'Festival of Wealth' },
+      { name: 'Halloween', type: 'holiday', day: 31, desc: 'Spooky Celebration' },
       { name: 'Diwali', type: 'festival', day: 31, desc: 'Festival of Lights' }
     ],
     10: [ // November
-      { name: 'Govardhan Puja', type: 'festival', day: 2, desc: 'Day after Diwali' },
-      { name: 'Bhai Dooj', type: 'festival', day: 3, desc: 'Brother-Sister Festival' },
-      { name: 'Chhath Puja', type: 'festival', day: 7, desc: 'Sun God Worship' },
-      { name: 'Childrens Day', type: 'festival', day: 14, desc: 'Birthday of Nehru' },
-      { name: 'Guru Nanak Jayanti', type: 'festival', day: 15, desc: 'Gurpurab' },
-      { name: 'Wedding Muhurat', type: 'muhurat', day: 22, desc: 'Wedding Season Begins' }
+      { name: 'Veterans Day', type: 'holiday', day: 11, desc: 'US Holiday' },
+      { name: 'Thanksgiving', type: 'holiday', day: 28, desc: 'US Harvest Festival' },
+      { name: 'Guru Nanak Jayanti', type: 'festival', day: 15, desc: 'Gurpurab' }
     ],
     11: [ // December
-      { name: 'Wedding Muhurat', type: 'muhurat', day: 4, desc: 'Peak Wedding Date' },
-      { name: 'Wedding Muhurat', type: 'muhurat', day: 14, desc: 'Last Muhurat of Year' },
-      { name: 'Christmas', type: 'festival', day: 25, desc: 'Birth of Jesus' },
-      { name: 'New Year Eve', type: 'festival', day: 31, desc: 'Party Time' }
+      { name: 'Christmas', type: 'holiday', day: 25, desc: 'Birth of Jesus' },
+      { name: 'Boxing Day', type: 'holiday', day: 26, desc: 'UK/Commonwealth Holiday' },
+      { name: 'Hanukkah', type: 'holiday', day: 25, desc: 'Jewish Festival of Lights' },
+      { name: 'New Year Eve', type: 'holiday', day: 31, desc: 'Party Time' }
     ]
   };
 
@@ -285,7 +276,7 @@ export const getUpcomingFestivals = (): CalendarEvent[] => {
     const eventMonth = eventDate.getMonth();
     return (eventMonth === currentMonth || eventMonth === nextMonth) && 
            eventDate.getFullYear() === year &&
-           event.type === 'festival';
+           (event.type === 'festival' || event.type === 'holiday');
   });
 };
 
@@ -314,3 +305,17 @@ export const MOCK_COMMUNITY_POSTS: CommunityPost[] = [
     timestamp: '5 hours ago'
   }
 ];
+
+// Dynamic Pricing Logic: Returns multiplier (e.g., 1.2 for 20% surge)
+export const getSeasonalityMultiplier = (): number => {
+    const month = new Date().getMonth(); // 0-11
+    // Peak Wedding Season in India: Nov(10), Dec(11), Jan(0), Feb(1)
+    if ([10, 11, 0, 1].includes(month)) {
+        return 1.3; // 30% surge
+    }
+    // Moderate: Oct(9), Mar(2), May(4)
+    if ([9, 2, 4].includes(month)) {
+        return 1.1; // 10% surge
+    }
+    return 1.0; // Standard rates
+};

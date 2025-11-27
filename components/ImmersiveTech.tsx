@@ -1,22 +1,114 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 // AR Simulation Component
 export const ARDecorPreview: React.FC = () => {
     const [activeDecor, setActiveDecor] = useState<string | null>(null);
+    const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+    const [hasCamera, setHasCamera] = useState(false);
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        let stream: MediaStream | null = null;
+        
+        const startCamera = async () => {
+            if (uploadedImage) return; // Don't start camera if user uploaded an image
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                if (videoRef.current) {
+                    videoRef.current.srcObject = stream;
+                    setHasCamera(true);
+                }
+            } catch (err) {
+                console.warn("Camera access denied or not available", err);
+                setHasCamera(false);
+            }
+        };
+
+        startCamera();
+
+        return () => {
+            if (stream) {
+                stream.getTracks().forEach(t => t.stop());
+            }
+        };
+    }, [uploadedImage]);
+
+    const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setUploadedImage(reader.result as string);
+                setHasCamera(false); // Disable camera mode
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleClearUpload = () => {
+        setUploadedImage(null);
+        // Effect will restart camera
+    };
 
     return (
-        <div className="relative rounded-2xl overflow-hidden shadow-lg border border-gray-200 h-96 bg-gray-100 group">
-            <div className="absolute top-4 left-4 z-10 bg-black/60 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-2">
-                <span>👓</span> AR Live Preview
+        <div className="relative rounded-2xl overflow-hidden shadow-lg border border-gray-200 h-96 bg-gray-900 group">
+            {/* Status Badge */}
+            <div className="absolute top-4 left-4 z-10 flex gap-2">
+                <div className="bg-black/60 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-2">
+                    <span>👓</span> {uploadedImage ? 'Custom Venue Photo' : hasCamera ? 'Live AR Feed' : 'AR Preview (Simulated)'}
+                </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="absolute top-4 right-4 z-10 flex gap-2">
+                {uploadedImage ? (
+                     <button 
+                        onClick={handleClearUpload}
+                        className="bg-black/60 hover:bg-black/80 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-2 transition-colors"
+                     >
+                        📷 Use Camera
+                     </button>
+                ) : (
+                    <button 
+                        onClick={() => fileInputRef.current?.click()}
+                        className="bg-white/90 hover:bg-white text-gray-900 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-2 transition-colors shadow-sm"
+                    >
+                        📤 Upload Venue Photo
+                    </button>
+                )}
+                <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    onChange={handleFileUpload} 
+                    accept="image/*" 
+                    className="hidden" 
+                />
             </div>
             
-            {/* Base Venue Image */}
-            <img 
-                src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=800" 
-                className="w-full h-full object-cover" 
-                alt="Venue"
-            />
+            {/* Render Content: Uploaded Image OR Video OR Default Image */}
+            {uploadedImage ? (
+                <img 
+                    src={uploadedImage} 
+                    className="w-full h-full object-cover" 
+                    alt="Uploaded Venue"
+                />
+            ) : hasCamera ? (
+                <video 
+                    ref={videoRef}
+                    autoPlay 
+                    playsInline 
+                    muted
+                    className="w-full h-full object-cover"
+                />
+            ) : (
+                <img 
+                    src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=800" 
+                    className="w-full h-full object-cover opacity-80" 
+                    alt="Venue"
+                />
+            )}
 
             {/* AR Overlays */}
             {activeDecor === 'floral' && (
@@ -27,7 +119,9 @@ export const ARDecorPreview: React.FC = () => {
                       style={{ maskImage: 'linear-gradient(to bottom, black 50%, transparent 100%)' }}
                       alt="Floral Decoration" 
                     />
-                    <div className="absolute bottom-10 left-10 bg-white/80 p-2 rounded text-xs font-bold text-pink-700">🌺 Floral Package Applied</div>
+                    <div className="absolute bottom-20 left-1/2 -translate-x-1/2 bg-white/80 p-2 rounded text-xs font-bold text-pink-700 shadow-lg">
+                        🌺 Object Anchored: Stage Arch
+                    </div>
                 </div>
             )}
             {activeDecor === 'lights' && (
@@ -85,6 +179,10 @@ export const VRVenueTour: React.FC = () => {
                      <div className="w-1 h-1 bg-white rounded-full"></div>
                  </div>
             </div>
+            
+            <div className="absolute bottom-4 right-4 bg-black/50 text-white text-[10px] px-2 py-1 rounded">
+                Compatible with Oculus / Vision Pro
+            </div>
 
             <style>{`
                 @keyframes panImage {
@@ -105,7 +203,7 @@ export const IoTControls: React.FC = () => {
         <div className="bg-gray-900 text-white rounded-2xl p-6 shadow-xl border border-gray-700">
             <div className="flex items-center gap-2 mb-6">
                 <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                <h3 className="font-bold text-sm uppercase tracking-wider">Smart Venue Connected</h3>
+                <h3 className="font-bold text-sm uppercase tracking-wider">Smart Venue Connected (Matter/Zigbee)</h3>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -133,6 +231,9 @@ export const IoTControls: React.FC = () => {
                     <p className="font-bold">Climate</p>
                     <p className="text-xs opacity-70">{ac}°C - Cooling</p>
                 </div>
+            </div>
+            <div className="mt-4 text-[10px] text-gray-500 text-center">
+                Low Latency: 12ms • Protocol: MQTT
             </div>
         </div>
     );
