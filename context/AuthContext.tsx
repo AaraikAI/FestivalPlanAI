@@ -21,8 +21,9 @@ const HOST_TEMPLATE: Partial<User> = {
   referralCode: 'FEST2025'
 };
 
+// Updated to link to 'v1' (Royal Heritage Banquet) so the Dashboard appears immediately
 const VENDOR_TEMPLATE: Partial<User> = {
-  vendorProfileId: 'v_pending',
+  vendorProfileId: 'v1',
   credits: 0,
   referralCode: 'VENDOR10'
 };

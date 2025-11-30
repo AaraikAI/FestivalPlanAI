@@ -9,6 +9,7 @@ interface EventContextType {
   vendors: Vendor[];
   addEvent: (newEvent: Event) => void;
   addVendor: (newVendor: Vendor) => void;
+  updateVendor: (updatedVendor: Vendor) => void;
   addVendorToEvent: (eventId: string, vendorId: string) => void;
   updateEvent: (updatedEvent: Event) => void;
   getEvent: (id: string) => Event | undefined;
@@ -72,6 +73,10 @@ export const EventProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const addVendor = (newVendor: Vendor) => {
     setVendors(prev => [newVendor, ...prev]);
   };
+  
+  const updateVendor = (updatedVendor: Vendor) => {
+      setVendors(prev => prev.map(v => v.id === updatedVendor.id ? updatedVendor : v));
+  };
 
   const addVendorToEvent = (eventId: string, vendorId: string) => {
     setEvents(prevEvents => prevEvents.map(event => {
@@ -94,7 +99,7 @@ export const EventProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const getVendor = (id: string) => vendors.find(v => v.id === id);
 
   return (
-    <EventContext.Provider value={{ events, vendors, addEvent, addVendor, addVendorToEvent, updateEvent, getEvent, getVendor }}>
+    <EventContext.Provider value={{ events, vendors, addEvent, addVendor, updateVendor, addVendorToEvent, updateEvent, getEvent, getVendor }}>
       {children}
     </EventContext.Provider>
   );

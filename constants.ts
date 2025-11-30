@@ -20,7 +20,8 @@ export const MOCK_VENDORS: Vendor[] = [
     location: 'Mumbai, Andheri',
     imageUrl: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=800&auto=format&fit=crop',
     description: 'Luxury banquet hall perfect for grand weddings.',
-    basePrice: 150000
+    basePrice: 150000,
+    services: ['Hall Rental', 'In-house Catering', 'Valet Parking', 'Bridal Suite']
   },
   {
     id: 'v2',
@@ -32,7 +33,8 @@ export const MOCK_VENDORS: Vendor[] = [
     location: 'Bangalore, Indiranagar',
     imageUrl: 'https://images.unsplash.com/photo-1555244162-803834f70033?q=80&w=800&auto=format&fit=crop',
     description: 'Organic, farm-to-table vegetarian catering with zero-waste policy.',
-    basePrice: 800 // Per plate
+    basePrice: 800, // Per plate
+    services: ['Buffet Setup', 'Live Counters', 'Vegan Options', 'Zero Waste Cutlery']
   },
   {
     id: 'v3',
@@ -44,7 +46,8 @@ export const MOCK_VENDORS: Vendor[] = [
     location: 'Delhi, CP',
     imageUrl: 'https://images.unsplash.com/photo-1537633552985-df8429e8048b?q=80&w=800&auto=format&fit=crop',
     description: 'Capturing moments that last a lifetime. Drone shots available.',
-    basePrice: 40000
+    basePrice: 40000,
+    services: ['Candid Photography', 'Drone Shots', 'Cinematic Video', 'Photo Album']
   },
   {
     id: 'v4',
@@ -56,7 +59,8 @@ export const MOCK_VENDORS: Vendor[] = [
     location: 'Pune, Koregaon Park',
     imageUrl: 'https://images.unsplash.com/photo-1478146896981-b80fe463b330?q=80&w=800&auto=format&fit=crop',
     description: 'Sustainable decor using recycled materials and local flowers.',
-    basePrice: 25000
+    basePrice: 25000,
+    services: ['Floral Setup', 'Stage Decor', 'Entrance Arch', 'Table Centerpieces']
   },
   {
     id: 'v5',
@@ -68,7 +72,8 @@ export const MOCK_VENDORS: Vendor[] = [
     location: 'Mumbai, Bandra',
     imageUrl: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=800&auto=format&fit=crop',
     description: 'Bollywood, EDM, and Punjabi hits to rock your party.',
-    basePrice: 15000
+    basePrice: 15000,
+    services: ['DJ Services', 'Sound System', 'Lighting Rig', 'MC/Host']
   }
 ];
 

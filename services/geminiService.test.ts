@@ -4,7 +4,7 @@ import { sendMessageToGemini } from './geminiService';
 
 // Mock the Google GenAI SDK
 const mockSendMessage = vi.fn();
-const mockCreateChat = vi.fn(() => ({
+const mockCreateChat = vi.fn((...args: any[]) => ({
   sendMessage: mockSendMessage
 }));
 
@@ -41,7 +41,10 @@ describe('geminiService', () => {
       await sendMessageToGemini([], 'Hola', 'es');
       
       // Verify configuration passed to create chat
-      const config = mockCreateChat.mock.calls[0][0].config;
+      const callArgs = mockCreateChat.mock.calls[0];
+      if (!callArgs) throw new Error('create chat not called');
+
+      const config = callArgs[0].config;
       expect(config.systemInstruction).toContain('Respond in Spanish');
   });
 });

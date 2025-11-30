@@ -1,28 +1,24 @@
 
 import React, { useState } from 'react';
-import { MOCK_COMMUNITY_POSTS } from '../constants';
+import { useCommunity } from '../context/CommunityContext';
+import { useAuth } from '../context/AuthContext';
 
 const Community: React.FC = () => {
+  const { posts, addPost, likePost } = useCommunity();
+  const { user } = useAuth();
   const [filter, setFilter] = useState('All');
+  const [newPostContent, setNewPostContent] = useState('');
   
-  // Augment mock posts for demo purposes if "Challenge" is selected
+  // Filter logic
   const displayPosts = filter === 'Challenge' 
-    ? [
-        {
-            id: 'c1',
-            author: 'Meera R.',
-            avatar: 'https://i.pravatar.cc/150?u=meera',
-            title: 'My Zero-Waste Diwali Decor! 🪔',
-            content: 'Used old newspapers to make paper mache diyas and painted them with organic colors. Check it out! #GreenDiwali2024',
-            likes: 245,
-            comments: 56,
-            tags: ['GreenDiwali2024', 'DIY'],
-            timestamp: '1 hour ago',
-            image: 'https://images.unsplash.com/photo-1496337589254-7e19d01cec44?q=80&w=400&auto=format&fit=crop'
-        },
-        ...MOCK_COMMUNITY_POSTS
-      ]
-    : MOCK_COMMUNITY_POSTS;
+    ? posts.filter(p => p.tags.includes('Challenge') || p.tags.includes('GreenDiwali2024'))
+    : posts;
+
+  const handlePost = () => {
+    if (!newPostContent.trim()) return;
+    addPost(newPostContent, ['Community']);
+    setNewPostContent('');
+  };
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500">
@@ -61,11 +57,13 @@ const Community: React.FC = () => {
                {/* Create Post Input */}
                <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm flex gap-4">
                   <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold flex-shrink-0">
-                      You
+                      {user?.avatar || '?'}
                   </div>
                   <div className="flex-1">
                       <input 
                         type="text" 
+                        value={newPostContent}
+                        onChange={(e) => setNewPostContent(e.target.value)}
                         placeholder="Share an idea or ask a question..." 
                         className="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-orange-500 outline-none"
                       />
@@ -74,7 +72,13 @@ const Community: React.FC = () => {
                               <button className="hover:text-gray-600 flex items-center gap-1">📷 Photo</button>
                               <button className="hover:text-gray-600 flex items-center gap-1">🔗 Link</button>
                           </div>
-                          <button className="bg-orange-600 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-orange-700">Post</button>
+                          <button 
+                            onClick={handlePost}
+                            disabled={!newPostContent.trim()}
+                            className="bg-orange-600 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-orange-700 disabled:opacity-50"
+                          >
+                            Post
+                          </button>
                       </div>
                   </div>
                </div>
@@ -109,8 +113,11 @@ const Community: React.FC = () => {
 
                            <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                                <div className="flex gap-6">
-                                   <button className="flex items-center gap-2 text-gray-500 text-sm hover:text-red-500 transition-colors">
-                                       <span>❤️</span> {post.likes}
+                                   <button 
+                                     onClick={() => likePost(post.id)}
+                                     className="flex items-center gap-2 text-gray-500 text-sm hover:text-red-500 transition-colors group"
+                                   >
+                                       <span className="group-hover:scale-110 transition-transform">❤️</span> {post.likes}
                                    </button>
                                    <button className="flex items-center gap-2 text-gray-500 text-sm hover:text-blue-500 transition-colors">
                                        <span>💬</span> {post.comments}

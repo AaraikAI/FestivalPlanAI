@@ -7,10 +7,12 @@ import BudgetChart from '../components/BudgetChart';
 import CalendarModal from '../components/CalendarModal';
 import { useEvents } from '../context/EventContext';
 import { useSettings } from '../context/SettingsContext';
+import { useAuth } from '../context/AuthContext';
 import { formatCurrency, t } from '../utils/localization';
 
 const Dashboard: React.FC = () => {
   const { events } = useEvents();
+  const { user } = useAuth();
   const { currency, language } = useSettings();
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
@@ -23,7 +25,7 @@ const Dashboard: React.FC = () => {
 
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">{t('welcome', language)}, Jay Deep! 🙏</h2>
+          <h2 className="text-2xl font-bold text-gray-900">{t('welcome', language)}, {user?.name || 'Guest'}! 🙏</h2>
           <p className="text-gray-500">{events.length} upcoming events.</p>
         </div>
         <Link to="/create-event" className="bg-gradient-to-r from-orange-500 to-pink-600 text-white px-6 py-3 rounded-xl font-bold hover:scale-105 transition-transform">

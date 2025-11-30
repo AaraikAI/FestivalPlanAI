@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
+import { getRealTimeWeather } from '../services/weatherService';
 
 // Mock live data generator
 const generateData = () => {
@@ -71,26 +72,53 @@ export const SentimentTracker: React.FC = () => {
 };
 
 export const WeatherRisk: React.FC = () => {
-    return (
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
-            <div className="relative z-10">
-                <h3 className="font-bold text-sm uppercase opacity-80 mb-4">AI Risk Prediction</h3>
-                
-                <div className="flex justify-between items-end mb-4">
-                    <div>
-                        <span className="text-4xl">🌤️</span>
-                        <p className="font-bold text-lg mt-2">Low Risk</p>
-                        <p className="text-xs opacity-80">Clear skies expected</p>
-                    </div>
-                    <div className="text-right">
-                        <p className="text-3xl font-bold">24°C</p>
-                        <p className="text-xs opacity-80">Humidity: 45%</p>
-                    </div>
-                </div>
+    const [weather, setWeather] = useState<{temp: number, cond: string, humidity: number} | null>(null);
+    const [loading, setLoading] = useState(true);
 
-                <div className="bg-white/10 rounded-lg p-3 text-xs">
-                    <p><b>AI Suggestion:</b> Ideal conditions for outdoor dining. No tent required.</p>
-                </div>
+    useEffect(() => {
+        const fetchWeather = async () => {
+            const data = await getRealTimeWeather();
+            setWeather({
+                temp: data.temperature,
+                cond: data.condition,
+                humidity: data.humidity
+            });
+            setLoading(false);
+        };
+        fetchWeather();
+    }, []);
+
+    const isRisky = weather ? (weather.temp > 35 || weather.temp < 10 || weather.cond.includes('Rain') || weather.cond.includes('Thunder')) : false;
+
+    return (
+        <div className={`bg-gradient-to-br ${isRisky ? 'from-orange-500 to-red-600' : 'from-blue-500 to-blue-600'} rounded-2xl p-6 text-white shadow-lg relative overflow-hidden transition-all duration-500`}>
+            <div className="relative z-10">
+                <h3 className="font-bold text-sm uppercase opacity-80 mb-4">AI Risk Prediction (Live)</h3>
+                
+                {loading ? (
+                    <div className="animate-pulse flex flex-col gap-2">
+                        <div className="h-8 w-24 bg-white/20 rounded"></div>
+                        <div className="h-4 w-32 bg-white/20 rounded"></div>
+                    </div>
+                ) : (
+                    <>
+                        <div className="flex justify-between items-end mb-4">
+                            <div>
+                                <span className="text-4xl">{isRisky ? '🌧️' : '🌤️'}</span>
+                                <p className="font-bold text-lg mt-2">{isRisky ? 'Moderate Risk' : 'Low Risk'}</p>
+                                <p className="text-xs opacity-80">{weather?.cond}</p>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-3xl font-bold">{weather?.temp}°C</p>
+                                <p className="text-xs opacity-80">Humidity: {weather?.humidity}%</p>
+                            </div>
+                        </div>
+
+                        <div className="bg-white/10 rounded-lg p-3 text-xs">
+                            <p><b>AI Suggestion:</b> {isRisky ? 'Keep indoor backup ready. Rain predicted.' : 'Ideal conditions for outdoor events.'}</p>
+                        </div>
+                    </>
+                )}
             </div>
             
             {/* Background Decoration */}

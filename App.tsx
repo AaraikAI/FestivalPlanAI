@@ -16,6 +16,7 @@ import Login from './pages/Login';
 import { EventProvider } from './context/EventContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { SettingsProvider } from './context/SettingsContext';
+import { CommunityProvider } from './context/CommunityContext';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -64,9 +65,11 @@ const App: React.FC = () => {
     <AuthProvider>
       <SettingsProvider>
         <EventProvider>
-          <HashRouter>
-            <AppRoutes />
-          </HashRouter>
+          <CommunityProvider>
+            <HashRouter>
+              <AppRoutes />
+            </HashRouter>
+          </CommunityProvider>
         </EventProvider>
       </SettingsProvider>
     </AuthProvider>

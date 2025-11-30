@@ -21,9 +21,9 @@ const BudgetChart: React.FC<Props> = ({ total, spent }) => {
   const percentage = total > 0 ? Math.round((spent / total) * 100) : 0;
 
   return (
-    <div className="h-64 w-full relative flex flex-col items-center justify-center">
-      <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none mb-6">
-        <div className="text-center">
+    <div className="h-full w-full relative flex flex-col items-center justify-center">
+      <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+        <div className="text-center pb-8">
             <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wide">Utilized</p>
             <p className="text-2xl font-bold text-gray-800">{percentage}%</p>
         </div>
@@ -36,11 +36,13 @@ const BudgetChart: React.FC<Props> = ({ total, spent }) => {
                 data={data}
                 cx="50%"
                 cy="50%"
-                innerRadius={60}
-                outerRadius={80}
+                innerRadius="60%"
+                outerRadius="80%"
                 fill="#8884d8"
                 paddingAngle={5}
                 dataKey="value"
+                startAngle={90}
+                endAngle={-270}
               >
                 {data.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

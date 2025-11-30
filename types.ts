@@ -56,6 +56,7 @@ export interface Vendor {
   verified?: boolean; // ID Verification Status
   ownerId?: string; // Link to User
   basePrice: number; // For dynamic pricing
+  services?: string[]; // Specific services offered
 }
 
 export interface EventTask {
